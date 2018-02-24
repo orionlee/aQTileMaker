@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="net.oldev.aqtilemaker.MainActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:textSize="16sp"
+        android:text="Click a tile to set the application / activity to launch." />
+
+    <TextView
+        android:id="@+id/tile1Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="Tile 1" />
+
+    <TextView
+        android:id="@+id/tile2Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/lightGray"
+        android:text="Tile 2" />
+
+</LinearLayout>
