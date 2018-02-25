@@ -14,11 +14,44 @@ android {
         versionName "${vMajor}.${vMinor}.${vPatch}"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    
+    signingConfigs {
+        releaseConfig {
+            if (project.hasProperty("releaseStoreFile")) {
+                storeFile file(releaseStoreFile)
+            } else {
+                storeFile file("keystore")
+            }
+            if (project.hasProperty("releaseStorePassword")) {
+                storePassword releaseStorePassword
+            } else {
+                storePassword "password"
+            }
+            if (project.hasProperty("releaseKeyAlias")) {
+                keyAlias releaseKeyAlias
+            } else {
+                keyAlias "alias"
+            }
+            if (project.hasProperty("releaseKeyPassword")) {
+                keyPassword releaseKeyPassword
+            } else {
+                keyPassword "password"
+            }
+        }
+    }
+    
     buildTypes {
+        debug {
+            // allow debug / release be installed as separate apps, 
+            // versionNameSuffix helps to differentiate them visually
+            applicationIdSuffix ".debug" 
+            versionNameSuffix "-debug"
+        }
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseConfig
         }
     }
     compileOptions {

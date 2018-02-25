@@ -1,6 +1,7 @@
 .gradle
 /local.properties
-/gradle.properties
+gradle.properties
+/app/release.keystore
 
 *.iml
 .idea/
