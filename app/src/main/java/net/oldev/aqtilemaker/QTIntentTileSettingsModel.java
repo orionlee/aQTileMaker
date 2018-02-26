@@ -8,11 +8,11 @@ public class QTIntentTileSettingsModel {
 
     public static class TileSettings {
         private boolean SupportLockscreen = false;
-        private String pkgName;
-        private String className;
-        private String label;
+        private CharSequence pkgName;
+        private CharSequence className;
+        private CharSequence label;
 
-        public TileSettings(String label, String pkgName, String className) {
+        public TileSettings(CharSequence label, CharSequence pkgName, CharSequence className) {
             this.label = label;
             this.pkgName = pkgName;
             this.className = className;
@@ -22,15 +22,15 @@ public class QTIntentTileSettingsModel {
             return SupportLockscreen;
         }
 
-        public String getPkgName() {
+        public CharSequence getPkgName() {
             return pkgName;
         }
 
-        public String getClassName() {
+        public CharSequence getClassName() {
             return className;
         }
 
-        public String getLabel() {
+        public CharSequence getLabel() {
             return label;
         }
 
@@ -71,9 +71,9 @@ public class QTIntentTileSettingsModel {
 
     public void setTileSettings(@NonNull String tileKey, @NonNull TileSettings settings) {
         SharedPreferences.Editor editor = getPrefs(tileKey).edit();
-        editor.putString(PREFS_T_LABEL, settings.getLabel());
-        editor.putString(PREFS_T_PKGNAME, settings.getPkgName());
-        editor.putString(PREFS_T_CLASSNAME, settings.getClassName());
+        editor.putString(PREFS_T_LABEL, settings.getLabel().toString());
+        editor.putString(PREFS_T_PKGNAME, settings.getPkgName().toString());
+        editor.putString(PREFS_T_CLASSNAME, settings.getClassName().toString());
 
         boolean success = editor.commit();
         if (!success) {

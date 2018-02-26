@@ -77,7 +77,7 @@ public class QTIntentService extends TileService {
         Log.d("QTIS", "onClick started.");
         try {
             Intent intent = new Intent();
-            intent.setClassName(mSettings.getPkgName(), mSettings.getClassName());
+            intent.setClassName(mSettings.getPkgName().toString(), mSettings.getClassName().toString());
             startActivityAndCollapse(intent);
         } catch (Throwable t) {
             Log.e("QTIS", "onClick error", t);
