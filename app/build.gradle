@@ -9,7 +9,7 @@ android {
         targetSdkVersion 26
         def vMajor = 0
         def vMinor = 1
-        def vPatch = 5
+        def vPatch = 6
         versionCode vMajor * 10000 + vMinor * 100 + vPatch
         versionName "${vMajor}.${vMinor}.${vPatch}"
         resConfigs "en"

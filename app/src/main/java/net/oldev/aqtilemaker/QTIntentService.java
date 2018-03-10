@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 @TargetApi(Build.VERSION_CODES.N)
-public class QTIntentService extends TileService {
+public abstract class QTIntentService extends TileService {
+
+    protected abstract @NonNull String getSettingsKey();
 
     private static class QTIntentTileSettings {
         private boolean SupportLockscreen = false;
@@ -54,10 +57,10 @@ public class QTIntentService extends TileService {
     @Override
     public void onStartListening() {
         Log.d("QTIS", "onStartListening()...");
-
+        
         // Get tile settings from backend
         QTIntentTileSettingsModel model = new QTIntentTileSettingsModel(getApplicationContext());
-        mSettings = model.getTileSettings(QTIntentTileSettingsModel.PREFERENCES_KEY_TILE1);
+        mSettings = model.getTileSettings(getSettingsKey());
 
         int activeState = this.isLocked() && !mSettings.isSupportLockscreen() ?
                 Tile.STATE_UNAVAILABLE : Tile.STATE_ACTIVE;
@@ -77,7 +80,25 @@ public class QTIntentService extends TileService {
         Log.d("QTIS", "onClick started.");
         try {
             Intent intent = new Intent();
-            intent.setClassName(mSettings.getPkgName().toString(), mSettings.getClassName().toString());
+            if (!mSettings.isEmpty()) {
+                intent.setClassName(mSettings.getPkgName().toString(), mSettings.getClassName().toString());
+            } else {
+                // launch the UI to specify it.
+
+                // Somehow this does not work
+                ///intent.setPackage(getApplicationContext().getPackageName()).setAction(TileService.ACTION_QS_TILE_PREFERENCES);
+                ///intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+
+
+                // Workaround: specify the activity explicitly
+                intent.setClassName(getApplicationContext(), MainActivity.class.getName());
+                intent.setAction(TileService.ACTION_QS_TILE_PREFERENCES);
+
+                // signify it is from this specific tile to the activity;
+                // PENDING: use it in activity later
+                intent.putExtra("tileKey", getSettingsKey());
+                
+            }
             startActivityAndCollapse(intent);
         } catch (Throwable t) {
             Log.e("QTIS", "onClick error", t);

@@ -1,17 +1,25 @@
 package net.oldev.aqtilemaker;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.service.quicksettings.TileService;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
+
+    private final Map<String, Integer> mTileKeyToViewId = new HashMap();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +29,19 @@ public class MainActivity extends AppCompatActivity {
         initTileLabelView(R.id.tile1Label, QTIntentTileSettingsModel.PREFERENCES_KEY_TILE1);
         initTileLabelView(R.id.tile2Label, QTIntentTileSettingsModel.PREFERENCES_KEY_TILE2);
         initTileLabelView(R.id.tile3Label, QTIntentTileSettingsModel.PREFERENCES_KEY_TILE3);
+
+        Log.d("QTIA", "intent: " + getIntent().toString() + " ; tileKey(if any): " + getIntent().getStringExtra("tileKey"));
+
+        // Launch the settings of the tile, if specified in the intent
+        final Intent intent = getIntent();
+        if (TileService.ACTION_QS_TILE_PREFERENCES.equals(intent.getAction())) {
+            String tileKey = intent.getStringExtra("tileKey");
+            if (tileKey != null) {
+                int viewId = mTileKeyToViewId.get(tileKey);
+                final TextView tileLabel = (TextView)findViewById(viewId);
+                tileLabel.performClick();
+            }
+        }
     }
 
     private void initTileLabelView(@IdRes int id, @NonNull String tileKey) {
@@ -28,11 +49,13 @@ public class MainActivity extends AppCompatActivity {
         final TextView tileLabel = (TextView)findViewById(id);
         tileLabel.setOnClickListener(new TileSettingsOnClickListener(tileKey));
 
+        mTileKeyToViewId.put(tileKey, id);
+
         // PENDING: data binding
         setTileLabel(tileLabel,
                      new QTIntentTileSettingsModel(getApplicationContext())
                              .getTileSettings(tileKey));
-
+        
     }
 
     // PENDING: data binding

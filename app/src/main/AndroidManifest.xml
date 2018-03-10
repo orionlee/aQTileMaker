@@ -11,10 +11,32 @@
         android:theme="@style/AppTheme">
 
         <service
-            android:name=".QTIntentService"
+            android:name=".QTIntentService1"
             android:enabled="true"
             android:icon="@drawable/ic_launcher_foreground"
-            android:label="Quick Tile"
+            android:label="Quick Tile 1"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".QTIntentService2"
+            android:enabled="true"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:label="Quick Tile 2"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".QTIntentService3"
+            android:enabled="true"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:label="Quick Tile 3"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE"/>
