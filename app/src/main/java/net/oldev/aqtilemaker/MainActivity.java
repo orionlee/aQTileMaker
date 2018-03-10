@@ -18,19 +18,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final TextView tile1 = (TextView)findViewById(R.id.tile1Label);
-        tile1.setOnClickListener(new TileSettingsOnClickListener());
+        initTileLabelView(R.id.tile1Label, QTIntentTileSettingsModel.PREFERENCES_KEY_TILE1);
+    }
+
+    private void initTileLabelView(@IdRes int id, @NonNull String tileKey) {
+        // UI binding
+        final TextView tileLabel = (TextView)findViewById(id);
+        tileLabel.setOnClickListener(new TileSettingsOnClickListener(tileKey));
 
         // PENDING: data binding
-        tile1.setText(new QTIntentTileSettingsModel(getApplicationContext())
-                        .getTileSettings(QTIntentTileSettingsModel.PREFERENCES_KEY_TILE1)
-                        .getLabel());
+        tileLabel.setText(new QTIntentTileSettingsModel(getApplicationContext())
+                              .getTileSettings(tileKey)
+                              .getLabel());
+
     }
 
     private class TileSettingsOnClickListener implements OnClickListener {
-        public void onClick(View view) {
+        private final @NonNull String tileKey;
 
-            final String tileKey = QTIntentTileSettingsModel.PREFERENCES_KEY_TILE1; // PENDING: should not be hardcoded
+        public TileSettingsOnClickListener(@NonNull String tileKey) {
+            this.tileKey = tileKey;
+        }
+
+        public void onClick(View view) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AppTheme_Dialog_Alert);
             builder.setTitle("Set the application / activity to launch");
@@ -44,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 //                                       ((EditText)dialogView.findViewById(R.id.classNameInput)).getText(),
 //                               Toast.LENGTH_SHORT).show();
                 saveToModel(tileKey, dialogView);
-                // PENDING: UI update should rely on listening to changes in underlying SharedPreference
+                // PENDING: data binding - UI update should rely on listening to changes in underlying SharedPreference
                 ((TextView)view).setText(((TextView)dialogView.findViewById(R.id.labelInput)).getText());
             });
 
