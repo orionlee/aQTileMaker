@@ -3,6 +3,7 @@ package net.oldev.aqtilemaker;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public class QTIntentTileSettingsModel {
 
@@ -34,12 +35,22 @@ public class QTIntentTileSettingsModel {
             return label;
         }
 
+
+        public boolean isEmpty() {
+            return isEmptyStr(label) && isEmptyStr(className) && isEmptyStr(pkgName);
+        }
+
+        private static boolean isEmptyStr(@Nullable CharSequence str) {
+            return str == null || str.length() == 0;
+        }
     }
 
     private static final String PREFERENCES_KEY_PREFIX = "net.oldev.aqtilemaker.";
 
     // keys to a tile
     public static final String PREFERENCES_KEY_TILE1 = PREFERENCES_KEY_PREFIX + "tile1";
+    public static final String PREFERENCES_KEY_TILE2 = PREFERENCES_KEY_PREFIX + "tile2";
+    public static final String PREFERENCES_KEY_TILE3 = PREFERENCES_KEY_PREFIX + "tile3";
 
     // for each tile's settings
     private static final String PREFS_T_LABEL = "label";
@@ -62,10 +73,9 @@ public class QTIntentTileSettingsModel {
 
     public @NonNull TileSettings getTileSettings(@NonNull String tileKey) {
         SharedPreferences p = getPrefs(tileKey);
-        // TODO: remove defaults
-        return new TileSettings(p.getString(PREFS_T_LABEL, "quick Keep"),
-            p.getString(PREFS_T_PKGNAME, "com.google.android.keep"),
-            p.getString(PREFS_T_CLASSNAME, "com.google.android.keep.activities.ShareReceiverActivity"));
+        return new TileSettings(p.getString(PREFS_T_LABEL, ""),
+            p.getString(PREFS_T_PKGNAME, ""),
+            p.getString(PREFS_T_CLASSNAME, ""));
     }
 
 

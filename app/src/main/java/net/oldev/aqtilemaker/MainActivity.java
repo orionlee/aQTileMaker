@@ -19,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initTileLabelView(R.id.tile1Label, QTIntentTileSettingsModel.PREFERENCES_KEY_TILE1);
+        initTileLabelView(R.id.tile2Label, QTIntentTileSettingsModel.PREFERENCES_KEY_TILE2);
+        initTileLabelView(R.id.tile3Label, QTIntentTileSettingsModel.PREFERENCES_KEY_TILE3);
     }
 
     private void initTileLabelView(@IdRes int id, @NonNull String tileKey) {
@@ -27,10 +29,22 @@ public class MainActivity extends AppCompatActivity {
         tileLabel.setOnClickListener(new TileSettingsOnClickListener(tileKey));
 
         // PENDING: data binding
-        tileLabel.setText(new QTIntentTileSettingsModel(getApplicationContext())
-                              .getTileSettings(tileKey)
-                              .getLabel());
+        setTileLabel(tileLabel,
+                     new QTIntentTileSettingsModel(getApplicationContext())
+                             .getTileSettings(tileKey));
 
+    }
+
+    // PENDING: data binding
+    private void setTileLabel(@NonNull TextView tileLabel,
+                              @NonNull QTIntentTileSettingsModel.TileSettings settings) {
+        if (!settings.isEmpty()) {
+            tileLabel.setText(settings.getLabel());
+            tileLabel.setTextColor(getResources().getColor(R.color.colorPrimaryDark, getTheme()));
+        } else {
+            tileLabel.setText("[Tile not set]");
+            tileLabel.setTextColor(getResources().getColor(R.color.colorDisabled, getTheme()));
+        }
     }
 
     private class TileSettingsOnClickListener implements OnClickListener {
@@ -53,9 +67,9 @@ public class MainActivity extends AppCompatActivity {
 //                Toast.makeText(getApplicationContext(), "Classname: " +
 //                                       ((EditText)dialogView.findViewById(R.id.classNameInput)).getText(),
 //                               Toast.LENGTH_SHORT).show();
-                saveToModel(tileKey, dialogView);
+                QTIntentTileSettingsModel.TileSettings settings = saveToModel(tileKey, dialogView);
                 // PENDING: data binding - UI update should rely on listening to changes in underlying SharedPreference
-                ((TextView)view).setText(((TextView)dialogView.findViewById(R.id.labelInput)).getText());
+                setTileLabel(((TextView)view), settings);
             });
 
             builder.setNegativeButton("Cancel",(dialog, which) -> {});
@@ -76,7 +90,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Data binding
-    private void saveToModel(@NonNull String tileKey, View dataView) {
+    private @NonNull QTIntentTileSettingsModel.TileSettings saveToModel(@NonNull String tileKey,
+                                                                        @NonNull View dataView) {
         QTIntentTileSettingsModel model = new QTIntentTileSettingsModel(getApplicationContext());
         QTIntentTileSettingsModel.TileSettings settings =
                 new QTIntentTileSettingsModel.TileSettings(getViewTextById(dataView, R.id.labelInput),
@@ -84,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
                                                            getViewTextById(dataView, R.id.classNameInput));
 
         model.setTileSettings(tileKey, settings);
+
+        return settings;
     }
 
     private void loadFromModel(@NonNull String tileKey, View dataView) {

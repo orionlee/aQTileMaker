@@ -27,7 +27,7 @@
         android:layout_marginBottom="4dp"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorDisabled"
         android:text="Tile 1" />
 
     <TextView
@@ -40,7 +40,20 @@
         android:layout_marginBottom="4dp"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="@color/lightGray"
+        android:textColor="@color/colorDisabled"
         android:text="Tile 2" />
 
+    <TextView
+        android:id="@+id/tile3Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorDisabled"
+        android:text="Tile 3" />
+    
 </LinearLayout>
