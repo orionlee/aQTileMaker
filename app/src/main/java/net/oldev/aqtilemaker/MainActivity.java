@@ -59,8 +59,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void setTileServiceEnabledSetting(@NonNull @TileKeys String tileKey, boolean enabled) {
-            ComponentName cmpName = new ComponentName(mCtx.getPackageName(),
-                                                      msTileKey2ClassName.get(tileKey));
+            ComponentName cmpName = toComponentName(tileKey);
             int newState = enabled ?
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
                     PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
@@ -68,10 +67,21 @@ public class MainActivity extends AppCompatActivity {
             mCtx.getPackageManager().setComponentEnabledSetting(cmpName, newState, 0);
         }
 
+        private ComponentName toComponentName(@NonNull @TileKeys String tileKey) {
+            return new ComponentName(mCtx.getPackageName(),
+                                     msTileKey2ClassName.get(tileKey));
+        }
+
+        public void triggerTileUIUpdate(@NonNull @TileKeys String tileKey) {
+            ComponentName cmpName = toComponentName(tileKey);
+            TileService.requestListeningState(mCtx.getApplicationContext(), cmpName);
+        }
+
         public void initAllTileServices(QTIntentTileSettingsModel model) {
             msTileKeys.forEach( (tileKey) -> {
                 QTIntentTileSettingsModel.TileSettings tileSettings = model.getTileSettings(tileKey);
                 setTileServiceEnabledSetting(tileKey, model.getTileSettings(tileKey));
+                triggerTileUIUpdate(tileKey);
             });
         }
     }
@@ -170,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // PENDING: data binding - backend service update should also rely on listening to changes in underlying SharedPreference
                 mQTIntentServiceManager.setTileServiceEnabledSetting(tileKey, settings);
+                mQTIntentServiceManager.triggerTileUIUpdate(tileKey); // required for active tile
 
                 // PENDING: data binding - backend service UI state
                 // the current logic does not work well for the case a tile is first defined:
@@ -181,11 +192,6 @@ public class MainActivity extends AppCompatActivity {
                 // Possible solutions:
                 // a. Active tile might work.
                 // b. somehow update <service android:label=""> 's equivalent programmatically
-
-                // PENDING: data binding related -
-                // make QTIntentService an active one, so that UI will be more responsive
-                // (the default passive mode making tile clicking lagging intermittently),
-                // where we can proactively update QsTile with TileService#requestListeningState()
 
             });
 
