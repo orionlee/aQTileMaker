@@ -1,10 +1,7 @@
 package net.oldev.aqtilemaker;
 
 import android.app.Dialog;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.service.quicksettings.TileService;
 import android.support.annotation.IdRes;
@@ -17,84 +14,14 @@ import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static net.oldev.aqtilemaker.QTIntentTileSettingsModel.TileKeys;
 
 public class MainActivity extends AppCompatActivity {
 
     private final Map<String, Integer> mTileKeyToViewId = new HashMap();
-
-    static class QTIntentServiceManager {
-
-        // Initialized by an immediately-invoked function expression Java approximate
-        // Supplier is an @FunctionalInterface that returns an object of specified type
-        private static final Map<String, String> msTileKey2ClassName = ((Supplier<Map<String, String>>)() -> {
-            Map<String, String> map = new HashMap();
-            map.put(QTIntentTileSettingsModel.PREFERENCES_KEY_TILE1, QTIntentService1.class.getName());
-            map.put(QTIntentTileSettingsModel.PREFERENCES_KEY_TILE2, QTIntentService2.class.getName());
-            map.put(QTIntentTileSettingsModel.PREFERENCES_KEY_TILE3, QTIntentService3.class.getName());
-
-            return Collections.unmodifiableMap(map);
-        }).get();
-
-        private static final Collection<String> msTileKeys =
-                Collections.unmodifiableCollection(msTileKey2ClassName.keySet());
-
-
-        private final @NonNull Context mCtx;
-
-        public QTIntentServiceManager(Context ctx) {
-            mCtx = ctx;
-        }
-        
-        public void setTileServiceEnabledSetting(@NonNull @TileKeys String tileKey,
-                                                 @NonNull QTIntentTileSettingsModel.TileSettings settings) {
-            boolean enabled = !settings.isEmpty();
-            setTileServiceEnabledSetting(tileKey, enabled);
-        }
-
-        private void setTileServiceEnabledSetting(@NonNull @TileKeys String tileKey, boolean enabled) {
-            ComponentName cmpName = toComponentName(tileKey);
-            int newState = enabled ?
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-
-            mCtx.getPackageManager().setComponentEnabledSetting(cmpName, newState, 0);
-        }
-
-        private ComponentName toComponentName(@NonNull @TileKeys String tileKey) {
-            return new ComponentName(mCtx.getPackageName(),
-                                     msTileKey2ClassName.get(tileKey));
-        }
-
-        public void triggerTileUIUpdate(@NonNull @TileKeys String tileKey) {
-            ComponentName cmpName = toComponentName(tileKey);
-            TileService.requestListeningState(mCtx.getApplicationContext(), cmpName);
-        }
-
-        public void initAllTileServices(QTIntentTileSettingsModel model) {
-            msTileKeys.forEach( (tileKey) -> {
-                QTIntentTileSettingsModel.TileSettings tileSettings = model.getTileSettings(tileKey);
-                setTileServiceEnabledSetting(tileKey, model.getTileSettings(tileKey));
-                triggerTileUIUpdate(tileKey);
-            });
-        }
-    }
-
-    // PENDING Put it in Activity for the time being while it is more
-    // Specifically, #initAllTileServices() also needs to be done at boot time in addition to here
-    private QTIntentServiceManager appInit() {
-        QTIntentTileSettingsModel model = new QTIntentTileSettingsModel(getApplicationContext());
-
-        QTIntentServiceManager mgr = new QTIntentServiceManager(getApplicationContext());
-        mgr.initAllTileServices(model);
-        return mgr;
-    }
 
     private QTIntentServiceManager mQTIntentServiceManager;
 
@@ -103,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // backend initialization
-        mQTIntentServiceManager = appInit();
+        mQTIntentServiceManager = QTIntentServiceManager.createAndInit(this);
 
         // UI initialization
 
