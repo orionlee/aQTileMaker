@@ -12,7 +12,6 @@ import java.lang.annotation.RetentionPolicy;
 public class QTIntentTileSettingsModel {
 
     public static class TileSettings {
-        private boolean SupportLockscreen = false;
         private CharSequence pkgName;
         private CharSequence className;
         private CharSequence label;
@@ -21,10 +20,6 @@ public class QTIntentTileSettingsModel {
             this.label = label;
             this.pkgName = pkgName;
             this.className = className;
-        }
-
-        public boolean isSupportLockscreen() {
-            return SupportLockscreen;
         }
 
         public CharSequence getPkgName() {

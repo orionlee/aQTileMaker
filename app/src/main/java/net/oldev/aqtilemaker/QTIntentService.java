@@ -64,45 +64,58 @@ public abstract class QTIntentService extends TileService {
         QTIntentTileSettingsModel model = new QTIntentTileSettingsModel(getApplicationContext());
         mSettings = model.getTileSettings(getSettingsKey());
 
-        int activeState = this.isLocked() && !mSettings.isSupportLockscreen() ?
-                Tile.STATE_UNAVAILABLE : Tile.STATE_ACTIVE;
         Tile tile = getQsTile();
         tile.setLabel(mSettings.getLabel());
-        tile.setState(activeState);
         tile.updateTile();
     }
 
     @Override
     public void onClick() {
-        if (this.isLocked() && !mSettings.isSupportLockscreen()) {
-            Log.d("QTIS", "onClick on lockscreen. NO-OP.");
-            return;
-        }
+        // lock screen check (to make tile unavailable) removed.
+        // Now when a user clicks the tile on lockscreen,
+        // he/she will typically be prompted to unlock the screen to see the activity launched
+        // Reasons for removing lock screen check:
+        // 1. supporting the old lock screen check with active tile will require additional
+        //    screen lock/unlock broadcast receivers to update the UI state, complicating the codes.
+        // 2. the new flow (prompt user to unlock screen) is also arguably more natural.
 
         Log.d("QTIS", "onClick started.");
-        try {
-            Intent intent = new Intent();
-            if (!mSettings.isEmpty()) {
-                intent.setClassName(mSettings.getPkgName().toString(), mSettings.getClassName().toString());
-            } else {
-                // launch the UI to specify it.
 
-                // Somehow this does not work
-                ///intent.setPackage(getApplicationContext().getPackageName()).setAction(TileService.ACTION_QS_TILE_PREFERENCES);
-                ///intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+        // encapsulate the main logic in a runnable
+        // to support lock screen case
+        Runnable doOnClick = () -> {
+            try {
+                Intent intent = new Intent();
+                if (!mSettings.isEmpty()) {
+                    intent.setClassName(mSettings.getPkgName().toString(), mSettings.getClassName().toString());
+                } else {
+                    // launch the Preference UI to define the tile
 
+                    // Somehow this does not work
+                    ///intent.setPackage(getApplicationContext().getPackageName()).setAction(TileService.ACTION_QS_TILE_PREFERENCES);
+                    ///intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 
-                // Workaround: specify the activity explicitly
-                intent.setClassName(getApplicationContext(), MainActivity.class.getName());
-                intent.setAction(TileService.ACTION_QS_TILE_PREFERENCES);
+                    // Workaround: specify the activity explicitly
+                    intent.setClassName(getApplicationContext(), MainActivity.class.getName());
+                    intent.setAction(TileService.ACTION_QS_TILE_PREFERENCES);
 
-                // signify it is from this specific tile to the activity;
-                intent.putExtra("tileKey", getSettingsKey());
-                
+                    // signify it is from this specific tile to the activity;
+                    intent.putExtra("tileKey", getSettingsKey());
+
+                }
+
+                startActivityAndCollapse(intent);
+
+            } catch (Throwable t) {
+                Log.e("QTIS", "onClick error", t);
             }
-            startActivityAndCollapse(intent);
-        } catch (Throwable t) {
-            Log.e("QTIS", "onClick error", t);
+        };
+
+        // trigger the main logic
+        if (!isLocked()) {
+            doOnClick.run();
+        } else {
+            unlockAndRun(doOnClick);
         }
     }
 
