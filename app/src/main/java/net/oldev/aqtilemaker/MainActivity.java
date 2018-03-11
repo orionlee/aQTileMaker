@@ -192,6 +192,10 @@ public class MainActivity extends AppCompatActivity {
                 // Possible solutions:
                 // a. Active tile might work.
                 // b. somehow update <service android:label=""> 's equivalent programmatically
+                // c. change UI flow and follow Nougat Quick Settings app (it.simonesestito.ntiles),
+                //    so that the on activity screen the user
+                //    i) enables / disables the tile only, and he/she
+                //    ii) has to add the (yet-to-defined) tile, then defines it by clicking the tile.
 
             });
 
