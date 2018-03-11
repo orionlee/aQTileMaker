@@ -164,8 +164,26 @@ public class MainActivity extends AppCompatActivity {
                 QTIntentTileSettingsModel.TileSettings settings = saveToModel(tileKey, dialogView);
                 // PENDING: data binding - UI update should rely on listening to changes in underlying SharedPreference
                 setTileLabel(((TextView)view), settings);
+
                 // PENDING: data binding - backend service update should also rely on listening to changes in underlying SharedPreference
                 mQTIntentServiceManager.setTileServiceEnabledSetting(tileKey, settings);
+
+                // PENDING: data binding - backend service UI state
+                // the current logic does not work well for the case a tile is first defined:
+                // 1. tile details are entered
+                // 2. user opens edit tile panel from the top
+                // 3. the tile shown will NOT have the updated label yet.
+                //    he/she might be confused.
+                // 4. once the tile is added, the tile label will be up-to-date.
+                // Possible solutions:
+                // a. Active tile might work.
+                // b. somehow update <service android:label=""> 's equivalent programmatically
+
+                // PENDING: data binding related -
+                // make QTIntentService an active one, so that UI will be more responsive
+                // (the default passive mode making tile clicking lagging intermittently),
+                // where we can proactively update QsTile with TileService#requestListeningState()
+
             });
 
             builder.setNegativeButton("Cancel",(dialog, which) -> {});
@@ -207,5 +225,4 @@ public class MainActivity extends AppCompatActivity {
         setViewTextById(dataView, R.id.pkgNameInput, settings.getPkgName());
         setViewTextById(dataView, R.id.classNameInput, settings.getClassName());
     }
-
 }
