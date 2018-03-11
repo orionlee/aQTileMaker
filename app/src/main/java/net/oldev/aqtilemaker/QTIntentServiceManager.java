@@ -49,19 +49,14 @@ public class QTIntentServiceManager {
         mCtx = ctx;
     }
 
-    public void setTileServiceEnabledSetting(@NonNull @QTIntentTileSettingsModel.TileKeys String tileKey,
-                                             @NonNull QTIntentTileSettingsModel.TileSettings settings) {
-        boolean enabled = !settings.isEmpty();
-        setTileServiceEnabledSetting(tileKey, enabled);
-    }
-
-    private void setTileServiceEnabledSetting(@NonNull @QTIntentTileSettingsModel.TileKeys String tileKey, boolean enabled) {
-        ComponentName cmpName = toComponentName(tileKey);
-        int newState = enabled ?
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
-                PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-
-        mCtx.getPackageManager().setComponentEnabledSetting(cmpName, newState, 0);
+    /**
+     * Bring the named tile's up-to-date, including enabled/disabled and UI details
+     */
+    public void updateTile(@NonNull @QTIntentTileSettingsModel.TileKeys String tileKey,
+                           @NonNull QTIntentTileSettingsModel.TileSettings settings) {
+        ComponentName tileCmpName = toComponentName(tileKey);
+        setTileServiceEnabledSetting(tileCmpName, settings);
+        triggerTileUIUpdate(tileCmpName);
     }
 
     private ComponentName toComponentName(@NonNull @QTIntentTileSettingsModel.TileKeys String tileKey) {
@@ -69,17 +64,23 @@ public class QTIntentServiceManager {
                                  msTileKey2ClassName.get(tileKey));
     }
 
-    public void triggerTileUIUpdate(@NonNull @QTIntentTileSettingsModel.TileKeys String tileKey) {
-        ComponentName cmpName = toComponentName(tileKey);
-        TileService.requestListeningState(mCtx.getApplicationContext(), cmpName);
+    private void setTileServiceEnabledSetting(@NonNull ComponentName tileCmpName, @NonNull QTIntentTileSettingsModel.TileSettings settings) {
+        boolean enabled = !settings.isEmpty();
+        int newState = enabled ?
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+
+        mCtx.getPackageManager().setComponentEnabledSetting(tileCmpName, newState, 0);
+    }
+
+    private void triggerTileUIUpdate(@NonNull ComponentName tileCmpName) {
+        TileService.requestListeningState(mCtx.getApplicationContext(), tileCmpName);
     }
 
     public void initAllTileServices(QTIntentTileSettingsModel model) {
         msTileKeys.forEach( (tileKey) -> {
             QTIntentTileSettingsModel.TileSettings tileSettings = model.getTileSettings(tileKey);
-            setTileServiceEnabledSetting(tileKey, model.getTileSettings(tileKey));
-            triggerTileUIUpdate(tileKey);
+            updateTile(tileKey, tileSettings);
         });
     }
-
 }

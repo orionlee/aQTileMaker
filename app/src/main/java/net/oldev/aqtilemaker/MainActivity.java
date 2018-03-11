@@ -106,8 +106,7 @@ public class MainActivity extends AppCompatActivity {
                 setTileLabel(((TextView)view), settings);
 
                 // PENDING: data binding - backend service update should also rely on listening to changes in underlying SharedPreference
-                mQTIntentServiceManager.setTileServiceEnabledSetting(tileKey, settings);
-                mQTIntentServiceManager.triggerTileUIUpdate(tileKey); // required for active tile
+                mQTIntentServiceManager.updateTile(tileKey, settings);
 
                 // PENDING: data binding - backend service UI state
                 // the current logic does not work well for the case a tile is first defined:
