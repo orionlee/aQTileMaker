@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public class QTIntentTileSettingsModel {
 
@@ -52,6 +56,10 @@ public class QTIntentTileSettingsModel {
     public static final String PREFERENCES_KEY_TILE2 = PREFERENCES_KEY_PREFIX + "tile2";
     public static final String PREFERENCES_KEY_TILE3 = PREFERENCES_KEY_PREFIX + "tile3";
 
+    @StringDef({PREFERENCES_KEY_TILE1, PREFERENCES_KEY_TILE2, PREFERENCES_KEY_TILE3})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TileKeys {}
+
     // for each tile's settings
     private static final String PREFS_T_LABEL = "label";
     private static final String PREFS_T_PKGNAME = "pkgName";
@@ -64,14 +72,14 @@ public class QTIntentTileSettingsModel {
         mContext = context;
     }
 
-    private @NonNull SharedPreferences getPrefs(@NonNull String tileKey) {
+    private @NonNull SharedPreferences getPrefs(@NonNull @TileKeys String tileKey) {
         SharedPreferences prefs =
                 mContext.getSharedPreferences(tileKey,
                                               Context.MODE_PRIVATE);
         return prefs;
     }
 
-    public @NonNull TileSettings getTileSettings(@NonNull String tileKey) {
+    public @NonNull TileSettings getTileSettings(@NonNull @TileKeys String tileKey) {
         SharedPreferences p = getPrefs(tileKey);
         return new TileSettings(p.getString(PREFS_T_LABEL, ""),
             p.getString(PREFS_T_PKGNAME, ""),
@@ -79,7 +87,7 @@ public class QTIntentTileSettingsModel {
     }
 
 
-    public void setTileSettings(@NonNull String tileKey, @NonNull TileSettings settings) {
+    public void setTileSettings(@NonNull @TileKeys String tileKey, @NonNull TileSettings settings) {
         SharedPreferences.Editor editor = getPrefs(tileKey).edit();
         editor.putString(PREFS_T_LABEL, settings.getLabel().toString());
         editor.putString(PREFS_T_PKGNAME, settings.getPkgName().toString());

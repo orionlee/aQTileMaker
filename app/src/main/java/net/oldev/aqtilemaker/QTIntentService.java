@@ -8,10 +8,12 @@ import android.service.quicksettings.TileService;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import static net.oldev.aqtilemaker.QTIntentTileSettingsModel.TileKeys;
+
 @TargetApi(Build.VERSION_CODES.N)
 public abstract class QTIntentService extends TileService {
 
-    protected abstract @NonNull String getSettingsKey();
+    protected abstract @NonNull @TileKeys String getSettingsKey();
 
     private static class QTIntentTileSettings {
         private boolean SupportLockscreen = false;

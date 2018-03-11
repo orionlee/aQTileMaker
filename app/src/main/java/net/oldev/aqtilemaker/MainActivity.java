@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import static net.oldev.aqtilemaker.QTIntentTileSettingsModel.TileKeys;
+
 public class MainActivity extends AppCompatActivity {
 
     private final Map<String, Integer> mTileKeyToViewId = new HashMap();
@@ -50,13 +52,13 @@ public class MainActivity extends AppCompatActivity {
             mCtx = ctx;
         }
         
-        public void setTileServiceEnabledSetting(@NonNull String tileKey,
+        public void setTileServiceEnabledSetting(@NonNull @TileKeys String tileKey,
                                                  @NonNull QTIntentTileSettingsModel.TileSettings settings) {
             boolean enabled = !settings.isEmpty();
             setTileServiceEnabledSetting(tileKey, enabled);
         }
 
-        private void setTileServiceEnabledSetting(@NonNull String tileKey, boolean enabled) {
+        private void setTileServiceEnabledSetting(@NonNull @TileKeys String tileKey, boolean enabled) {
             ComponentName cmpName = new ComponentName(mCtx.getPackageName(),
                                                       msTileKey2ClassName.get(tileKey));
             int newState = enabled ?
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         // Launch the settings of the tile, if specified in the intent
         final Intent intent = getIntent();
         if (TileService.ACTION_QS_TILE_PREFERENCES.equals(intent.getAction())) {
-            String tileKey = intent.getStringExtra("tileKey");
+            @TileKeys String tileKey = intent.getStringExtra("tileKey");
             if (tileKey != null) {
                 int viewId = mTileKeyToViewId.get(tileKey);
                 final TextView tileLabel = (TextView)findViewById(viewId);
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initTileLabelView(@IdRes int id, @NonNull String tileKey) {
+    private void initTileLabelView(@IdRes int id, @NonNull @TileKeys String tileKey) {
         // UI binding
         final TextView tileLabel = (TextView)findViewById(id);
         tileLabel.setOnClickListener(new TileSettingsOnClickListener(tileKey));
@@ -142,9 +144,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class TileSettingsOnClickListener implements OnClickListener {
-        private final @NonNull String tileKey;
+        private final @NonNull @TileKeys
+        String tileKey;
 
-        public TileSettingsOnClickListener(@NonNull String tileKey) {
+        public TileSettingsOnClickListener(@NonNull @TileKeys String tileKey) {
             this.tileKey = tileKey;
         }
 
@@ -204,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Data binding
-    private @NonNull QTIntentTileSettingsModel.TileSettings saveToModel(@NonNull String tileKey,
+    private @NonNull QTIntentTileSettingsModel.TileSettings saveToModel(@NonNull @TileKeys String tileKey,
                                                                         @NonNull View dataView) {
         QTIntentTileSettingsModel model = new QTIntentTileSettingsModel(getApplicationContext());
         QTIntentTileSettingsModel.TileSettings settings =
@@ -217,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
         return settings;
     }
 
-    private void loadFromModel(@NonNull String tileKey, View dataView) {
+    private void loadFromModel(@NonNull @TileKeys String tileKey, View dataView) {
         QTIntentTileSettingsModel model = new QTIntentTileSettingsModel(getApplicationContext());
         QTIntentTileSettingsModel.TileSettings settings = model.getTileSettings(tileKey);
 
