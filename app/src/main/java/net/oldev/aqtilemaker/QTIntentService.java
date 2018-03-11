@@ -97,7 +97,6 @@ public abstract class QTIntentService extends TileService {
                 intent.setAction(TileService.ACTION_QS_TILE_PREFERENCES);
 
                 // signify it is from this specific tile to the activity;
-                // PENDING: use it in activity later
                 intent.putExtra("tileKey", getSettingsKey());
                 
             }
