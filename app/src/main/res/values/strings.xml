@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Quick Settings Tile Maker</string>
+    <string name="boot_receiver_label">Quick Settings Tile Maker Boot Initialization</string>
 </resources>
