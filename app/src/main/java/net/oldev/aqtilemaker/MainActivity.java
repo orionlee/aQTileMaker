@@ -1,13 +1,13 @@
 package net.oldev.aqtilemaker;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.service.quicksettings.TileService;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 import static net.oldev.aqtilemaker.QTIntentTileSettingsModel.TileKeys;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private final Map<String, Integer> mTileKeyToViewId = new HashMap();
 
